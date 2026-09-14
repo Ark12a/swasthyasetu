@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
+import { useLanguage } from "../contexts/LanguageContext";
 import {
   Activity,
   ArrowRight,
@@ -67,20 +68,33 @@ function Logo({ inverse = false }: { inverse?: boolean }) {
   );
 }
 
+function LanguageSwitcher({ inverse = false }: { inverse?: boolean }) {
+  const { language, setLanguage, languageLabel } = useLanguage();
+  return <label className={`flex items-center gap-2 rounded-xl border px-2.5 py-2 text-[10px] font-extrabold ${inverse ? "border-white/15 bg-white/10 text-white" : "border-[#e4e9ef] bg-white text-[#546177]"}`} title="Change language">
+    <Languages size={14} className={inverse ? "text-[#8eddd7]" : "text-[#1f9f99]"} />
+    <span className="hidden sm:inline">{languageLabel}</span>
+    <select aria-label="Change language" value={language} onChange={(event) => setLanguage(event.target.value as "en" | "hi" | "te")} className={`bg-transparent outline-none ${inverse ? "text-white" : "text-[#546177]"}`}>
+      <option value="en">EN</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option>
+    </select>
+  </label>;
+}
+
 function TopNav({ onNavigate }: { onNavigate: (to: NavKey) => void }) {
   const [open, setOpen] = useState(false);
+  const { t } = useLanguage();
   return (
     <header className="absolute left-0 right-0 top-0 z-20">
       <div className="container flex h-[78px] items-center justify-between">
         <button aria-label="SwasthyaSetu home" onClick={() => onNavigate("/")}><Logo /></button>
         <nav className="hidden items-center gap-7 lg:flex">
-          {["Features", "How it works", "For doctors", "About us"].map((item, index) => (
+          {[t("nav.features", "Features"), t("nav.how", "How it works"), t("nav.doctors", "For doctors"), t("nav.about", "About us")].map((item, index) => (
             <a key={item} href={`#${["features", "how-it-works", "doctors", "about"][index]}`} className="text-[12px] font-bold text-[#4d5971] transition-colors hover:text-[#24285f]">{item}</a>
           ))}
         </nav>
         <div className="hidden items-center gap-3 sm:flex">
-          <button className="btn btn-quiet !rounded-[10px] !border-transparent !bg-transparent px-3" onClick={() => onNavigate("/doctor-login")}>Doctor portal</button>
-          <button className="btn btn-primary !rounded-[10px]" onClick={() => onNavigate("/patient-login")}>Get started <ArrowRight size={14} /></button>
+          <LanguageSwitcher />
+          <button className="btn btn-quiet !rounded-[10px] !border-transparent !bg-transparent px-3" onClick={() => onNavigate("/doctor-login")}>{t("nav.doctorPortal", "Doctor portal")}</button>
+          <button className="btn btn-primary !rounded-[10px]" onClick={() => onNavigate("/patient-login")}>{t("nav.getStarted", "Get started")} <ArrowRight size={14} /></button>
         </div>
         <button className="rounded-xl border border-[#e4e9ef] bg-white p-2.5 text-[#24285f] sm:hidden" onClick={() => setOpen(!open)} aria-label="Open menu">{open ? <X size={18} /> : <Menu size={18} />}</button>
       </div>
@@ -100,6 +114,7 @@ function MiniSparkline() {
 }
 
 function LandingPage({ onNavigate }: { onNavigate: (to: NavKey) => void }) {
+  const { t } = useLanguage();
   return <div className="min-h-screen overflow-hidden bg-[#f6f8fb] text-[#192338]">
     <section className="noise relative overflow-hidden bg-[#eef4f5]">
       <div className="absolute -right-32 -top-36 h-[520px] w-[520px] rounded-full bg-[#c9e8e2]/50 blur-3xl" />
@@ -108,12 +123,12 @@ function LandingPage({ onNavigate }: { onNavigate: (to: NavKey) => void }) {
       <div className="container relative flex min-h-[690px] items-center pb-20 pt-32 lg:pb-28 lg:pt-36">
         <div className="grid w-full items-center gap-14 lg:grid-cols-[1.05fr_.95fr]">
           <div className="stagger max-w-[620px]">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#cde3df] bg-white/65 px-3 py-2 text-[11px] font-extrabold text-[#1f8581]"><span className="h-2 w-2 rounded-full bg-[#1f9f99] pulse-soft" /> Designed for every health conversation</div>
-            <h1 className="display text-[48px] font-extrabold leading-[1.04] text-[#24285f] sm:text-[64px] lg:text-[72px]">Your health story,<br /><span className="text-[#1f9f99]">heard clearly.</span></h1>
-            <p className="mt-6 max-w-[510px] text-[17px] leading-8 text-[#59677b]">SwasthyaSetu turns the way you feel into a structured, shareable case your doctor can act on — in your language, at your pace.</p>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#cde3df] bg-white/65 px-3 py-2 text-[11px] font-extrabold text-[#1f8581]"><span className="h-2 w-2 rounded-full bg-[#1f9f99] pulse-soft" /> {t("hero.badge", "Designed for every health conversation")}</div>
+            <h1 className="display text-[48px] font-extrabold leading-[1.04] text-[#24285f] sm:text-[64px] lg:text-[72px]">{t("hero.titleA", "Your health story,")}<br /><span className="text-[#1f9f99]">{t("hero.titleB", "heard clearly.")}</span></h1>
+            <p className="mt-6 max-w-[510px] text-[17px] leading-8 text-[#59677b]">{t("hero.description", "SwasthyaSetu turns the way you feel into a structured, shareable case your doctor can act on — in your language, at your pace.")}</p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <button className="btn btn-primary px-5 py-3.5" onClick={() => onNavigate("/patient-login")}>Start your health story <ArrowRight size={15} /></button>
-              <a className="btn btn-quiet px-5 py-3.5" href="#how-it-works"><PlayCircle size={16} className="text-[#1f9f99]" /> See how it works</a>
+              <button className="btn btn-primary px-5 py-3.5" onClick={() => onNavigate("/patient-login")}>{t("hero.start", "Start your health story")} <ArrowRight size={15} /></button>
+              <a className="btn btn-quiet px-5 py-3.5" href="#how-it-works"><PlayCircle size={16} className="text-[#1f9f99]" /> {t("hero.how", "See how it works")}</a>
             </div>
             <div className="mt-9 flex items-center gap-4 text-[11px] font-bold text-[#68768a]"><div className="flex -space-x-2">{["#f5c6a7", "#9cc6b2", "#c4b1e4", "#f2d18b"].map((color, i) => <span key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#eef4f5] text-[10px] font-extrabold text-white" style={{ background: color }}>✦</span>)}</div><span>Built for multilingual, human-first care</span><span className="h-1 w-1 rounded-full bg-[#aab4c1]" /><span className="flex items-center gap-1"><ShieldCheck size={14} className="text-[#1f9f99]" /> Private by design</span></div>
           </div>
@@ -151,10 +166,11 @@ function Feature({ icon, title, body, tint }: { icon: React.ReactNode; title: st
 
 function LoginPortal({ role, onNavigate }: { role: "patient" | "doctor"; onNavigate: (to: NavKey) => void }) {
   const isDoctor = role === "doctor";
+  const { t } = useLanguage();
   const [mode, setMode] = useState<"password" | "otp">("password");
   const [submitted, setSubmitted] = useState(false);
   const [identifier, setIdentifier] = useState("");
-  const title = isDoctor ? "Welcome back, doctor." : "Welcome back to your care.";
+  const title = isDoctor ? t("login.doctorTitle", "Welcome back, doctor.") : t("login.patientTitle", "Welcome back to your care.");
   const subtitle = isDoctor ? "Sign in to review patient stories and keep care moving." : "Your health story is safe, private, and ready when you are.";
   const submit = () => { setSubmitted(true); toast.success(isDoctor ? "Doctor portal ready" : "Welcome back, Asha", { description: "Demo access granted — opening your workspace." }); setTimeout(() => onNavigate(isDoctor ? "/doctor" : "/patient"), 500); };
   return <div className="min-h-screen bg-[#f6f8fb] text-[#192338]"><div className="grid min-h-screen lg:grid-cols-[.9fr_1.1fr]">
@@ -165,12 +181,13 @@ function LoginPortal({ role, onNavigate }: { role: "patient" | "doctor"; onNavig
 
 function AppFrame({ children, active, onNavigate, role = "patient" }: { children: React.ReactNode; active: string; onNavigate: (to: NavKey) => void; role?: "patient" | "doctor" }) {
   const [collapsed, setCollapsed] = useState(false);
+  const { t } = useLanguage();
   const patientLinks = [["Overview", "/patient", House], ["My health story", "/case", ClipboardList], ["Documents", "/case", FileText], ["Doctor consultation", "/doctor", Stethoscope]] as const;
   const doctorLinks = [["Overview", "/doctor", House], ["New cases", "/doctor", ClipboardList], ["Patients", "/doctor", UserRound], ["Appointments", "/doctor", CalendarDays], ["Reports", "/doctor", FileText]] as const;
   const links = role === "doctor" ? doctorLinks : patientLinks;
   return <div className="min-h-screen bg-[#f6f8fb] text-[#192338]">
     <aside className={`fixed bottom-0 left-0 top-0 z-30 hidden flex-col bg-[#24285f] p-5 text-white transition-all lg:flex ${collapsed ? "w-[88px]" : "w-[248px]"}`}>
-      <div className={`flex items-center ${collapsed ? "justify-center" : "justify-between"}`}><button onClick={() => onNavigate("/")} aria-label="Back to home"><Logo inverse /></button>{!collapsed && <button onClick={() => setCollapsed(true)} className="rounded-lg p-2 text-white/50 hover:bg-white/10 hover:text-white" aria-label="Collapse sidebar"><SlidersHorizontal size={15} /></button>}</div>
+      <div className={`flex items-center ${collapsed ? "justify-center" : "justify-between"}`}><button onClick={() => onNavigate("/")} aria-label="Back to home"><Logo inverse /></button>{!collapsed && <div className="flex items-center gap-2"><LanguageSwitcher inverse /><button onClick={() => setCollapsed(true)} className="rounded-lg p-2 text-white/50 hover:bg-white/10 hover:text-white" aria-label="Collapse sidebar"><SlidersHorizontal size={15} /></button></div>}</div>
       {collapsed && <button onClick={() => setCollapsed(false)} className="mt-7 flex w-full justify-center rounded-xl bg-white/10 p-3 text-white/70 hover:bg-white/15" aria-label="Expand sidebar"><Menu size={17} /></button>}
       <div className="mt-10 flex-1"><p className={`px-3 text-[9px] font-extrabold uppercase tracking-[.18em] text-white/35 ${collapsed ? "text-center" : ""}`}>{role === "doctor" ? "Workspace" : "Your care"}</p><nav className="mt-3 space-y-1">{links.map(([label, path, Icon]) => <button key={label} onClick={() => onNavigate(path as NavKey)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[12px] font-bold transition-colors ${active === label ? "bg-white/13 text-white" : "text-white/55 hover:bg-white/8 hover:text-white"}`}><Icon size={17} />{!collapsed && <span>{label}</span>}</button>)}</nav></div>
       {!collapsed && <div className="rounded-2xl border border-white/10 bg-white/8 p-4"><div className="flex items-center justify-between"><span className="text-[10px] font-extrabold uppercase tracking-[.12em] text-white/50">Need help?</span><MessageCircle size={15} className="text-[#8eddd7]" /></div><p className="mt-2 text-[11px] leading-5 text-white/65">Our care team is one tap away.</p><button onClick={() => toast.success("Care team notified", { description: "Someone will be in touch shortly." })} className="mt-3 text-[11px] font-extrabold text-[#8eddd7]">Start a conversation <ArrowRight className="inline" size={12} /></button></div>}
@@ -182,10 +199,11 @@ function AppFrame({ children, active, onNavigate, role = "patient" }: { children
 
 function PatientDashboard({ onNavigate }: { onNavigate: (to: NavKey) => void }) {
   const [language, setLanguage] = useState("हिन्दी");
+  const { t } = useLanguage();
   return <AppFrame active="Overview" onNavigate={onNavigate}>
-    <div className="stagger"><div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="eyebrow">Patient home</p><h1 className="display mt-2 text-[31px] font-extrabold text-[#24285f]">Namaste, Asha <span className="inline-block">✦</span></h1><p className="mt-2 text-[13px] text-[#7b8797]">Let&apos;s make today&apos;s health conversation a little easier.</p></div><button className="btn btn-quiet self-start !bg-white sm:self-auto" onClick={() => toast.success("Language updated", { description: `Your care journey will now use ${language}.` })}><Languages size={15} className="text-[#1f9f99]" /> {language} <ChevronRight size={14} /></button></div>
+    <div className="stagger"><div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="eyebrow">{t("dashboard.patient", "Patient home")}</p><h1 className="display mt-2 text-[31px] font-extrabold text-[#24285f]">{t("dashboard.greeting", "Namaste, Asha")} <span className="inline-block">✦</span></h1><p className="mt-2 text-[13px] text-[#7b8797]">Let&apos;s make today&apos;s health conversation a little easier.</p></div><button className="btn btn-quiet self-start !bg-white sm:self-auto" onClick={() => toast.success("Language updated", { description: `Your care journey will now use ${language}.` })}><Languages size={15} className="text-[#1f9f99]" /> {language} <ChevronRight size={14} /></button></div>
       <div className="mt-7 grid gap-4 xl:grid-cols-[1.45fr_.85fr]">
-        <div className="relative overflow-hidden rounded-[25px] bg-[#24285f] p-6 text-white sm:p-8"><div className="absolute -right-14 -top-24 h-64 w-64 rounded-full border-[30px] border-white/5" /><div className="absolute -bottom-16 right-20 h-40 w-40 rounded-full bg-[#1f9f99]/20 blur-2xl" /><div className="relative max-w-[450px]"><div className="flex items-center gap-2"><span className="chip bg-[#8eddd7]/15 text-[#8eddd7]"><Sparkles size={12} /> Care check-in</span><span className="text-[10px] font-bold text-white/45">2 min · voice or text</span></div><h2 className="display mt-6 text-[30px] font-extrabold leading-[1.12] sm:text-[37px]">How are you<br />feeling today?</h2><p className="mt-3 max-w-[350px] text-[13px] leading-6 text-white/60">Start a new health story and we&apos;ll help you capture the details that matter.</p><button className="btn mt-7 bg-[#8eddd7] text-[#173c4d] hover:bg-[#a2e7e1]" onClick={() => onNavigate("/case")}>Start a new case <ArrowRight size={15} /></button></div></div>
+        <div className="relative overflow-hidden rounded-[25px] bg-[#24285f] p-6 text-white sm:p-8"><div className="absolute -right-14 -top-24 h-64 w-64 rounded-full border-[30px] border-white/5" /><div className="absolute -bottom-16 right-20 h-40 w-40 rounded-full bg-[#1f9f99]/20 blur-2xl" /><div className="relative max-w-[450px]"><div className="flex items-center gap-2"><span className="chip bg-[#8eddd7]/15 text-[#8eddd7]"><Sparkles size={12} /> Care check-in</span><span className="text-[10px] font-bold text-white/45">2 min · voice or text</span></div><h2 className="display mt-6 text-[30px] font-extrabold leading-[1.12] sm:text-[37px]">{t("dashboard.checkin", "How are you feeling today?")}</h2><p className="mt-3 max-w-[350px] text-[13px] leading-6 text-white/60">Start a new health story and we&apos;ll help you capture the details that matter.</p><button className="btn mt-7 bg-[#8eddd7] text-[#173c4d] hover:bg-[#a2e7e1]" onClick={() => onNavigate("/case")}>{t("dashboard.startCase", "Start a new case")} <ArrowRight size={15} /></button></div></div>
         <div className="soft-card flex flex-col justify-between p-6"><div className="flex items-start justify-between"><div><p className="eyebrow">In progress</p><h3 className="display mt-2 text-[21px] font-extrabold text-[#24285f]">Seasonal check-in</h3></div><span className="chip bg-[#fff5e5] text-[#b7781e]">68% complete</span></div><div className="mt-7"><div className="mb-2 flex justify-between text-[10px] font-bold text-[#8290a1]"><span>Last saved today, 10:24 AM</span><span>Step 3 of 5</span></div><div className="h-2 overflow-hidden rounded-full bg-[#edf1f4]"><div className="h-full w-[68%] rounded-full bg-[#1f9f99]" /></div></div><button className="btn btn-quiet mt-6 w-full !justify-between !bg-[#fbfcfd]" onClick={() => onNavigate("/case")}>Continue case <ArrowRight size={14} /></button></div>
       </div>
       <div className="mt-5 grid gap-4 sm:grid-cols-3"><StatCard label="Care stories" value="06" change="+2 this month" icon={<ClipboardList size={17} />} /><StatCard label="Documents" value="12" change="2 need review" icon={<FileText size={17} />} accent="gold" /><StatCard label="Next consultation" value="Today" change="Dr. Mehta · 4:30 PM" icon={<CalendarDays size={17} />} accent="purple" /></div>
