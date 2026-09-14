@@ -14,6 +14,7 @@ function Router() {
       <Route path="/patient-login" component={Home} />
       <Route path="/doctor-login" component={Home} />
       <Route path="/patient" component={Home} />
+      <Route path="/preventive" component={Home} />
       <Route path="/doctor" component={Home} />
       <Route path="/case" component={Home} />
       <Route path="/access" component={Home} />

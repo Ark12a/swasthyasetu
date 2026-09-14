@@ -16,6 +16,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Clock3,
+  Droplets,
   FileText,
   HeartPulse,
   House,
@@ -26,6 +27,7 @@ import {
   MapPin,
   Menu,
   MessageCircle,
+  Moon,
   Mic2,
   Navigation,
   PackageCheck,
@@ -43,13 +45,14 @@ import {
   Sparkles,
   Star,
   Stethoscope,
+  SunMedium,
   UploadCloud,
   UserRound,
   Volume2,
   X,
 } from "lucide-react";
 
-type NavKey = "/" | "/patient-login" | "/doctor-login" | "/patient" | "/case" | "/doctor" | "/access";
+type NavKey = "/" | "/patient-login" | "/doctor-login" | "/patient" | "/preventive" | "/case" | "/doctor" | "/access";
 
 const go = (setLocation: (to: string) => void, to: NavKey) => setLocation(to);
 
@@ -182,7 +185,7 @@ function LoginPortal({ role, onNavigate }: { role: "patient" | "doctor"; onNavig
 function AppFrame({ children, active, onNavigate, role = "patient" }: { children: React.ReactNode; active: string; onNavigate: (to: NavKey) => void; role?: "patient" | "doctor" }) {
   const [collapsed, setCollapsed] = useState(false);
   const { t } = useLanguage();
-  const patientLinks = [["Overview", "/patient", House], ["My health story", "/case", ClipboardList], ["Documents", "/case", FileText], ["Doctor consultation", "/doctor", Stethoscope]] as const;
+  const patientLinks = [["Overview", "/patient", House], ["Preventive care", "/preventive", Leaf], ["My health story", "/case", ClipboardList], ["Documents", "/case", FileText], ["Doctor consultation", "/doctor", Stethoscope]] as const;
   const doctorLinks = [["Overview", "/doctor", House], ["New cases", "/doctor", ClipboardList], ["Patients", "/doctor", UserRound], ["Appointments", "/doctor", CalendarDays], ["Reports", "/doctor", FileText]] as const;
   const links = role === "doctor" ? doctorLinks : patientLinks;
   return <div className="min-h-screen bg-[#f6f8fb] text-[#192338]">
@@ -209,6 +212,29 @@ function PatientDashboard({ onNavigate }: { onNavigate: (to: NavKey) => void }) 
       <div className="mt-5 grid gap-4 sm:grid-cols-3"><StatCard label="Care stories" value="06" change="+2 this month" icon={<ClipboardList size={17} />} /><StatCard label="Documents" value="12" change="2 need review" icon={<FileText size={17} />} accent="gold" /><StatCard label="Next consultation" value="Today" change="Dr. Mehta · 4:30 PM" icon={<CalendarDays size={17} />} accent="purple" /></div>
       <div className="mt-8 grid gap-5 lg:grid-cols-[1.1fr_.9fr]"><div className="soft-card p-6"><div className="flex items-center justify-between"><div><p className="eyebrow">Your recent stories</p><h3 className="display mt-2 text-[21px] font-extrabold text-[#24285f]">A little context goes a long way.</h3></div><button className="text-[11px] font-extrabold text-[#1f9f99]" onClick={() => toast("All stories", { description: "Your full case history is coming soon." })}>View all <ChevronRight className="inline" size={13} /></button></div><div className="mt-6 divide-y divide-[#edf0f3]">{[["Seasonal check-in", "Today · In progress", "#e8f6f3", "#1f9f99", <Activity size={16} />], ["Headache & sleep", "08 Sep 2026 · Reviewed", "#fff5e5", "#bd7e21", <Brain size={16} />], ["Annual wellness", "22 Aug 2026 · Completed", "#f0edff", "#7c73d0", <HeartPulse size={16} />]].map(([name, meta, bg, color, icon]) => <div key={name as string} className="flex items-center gap-3 py-4 first:pt-0 last:pb-0"><span className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: bg as string, color: color as string }}>{icon}</span><div className="flex-1"><p className="text-[13px] font-extrabold text-[#2c3753]">{name}</p><p className="mt-1 text-[10px] font-semibold text-[#8b96a5]">{meta}</p></div><ChevronRight size={15} className="text-[#b2bcc7]" /></div>)}</div></div><div className="soft-card overflow-hidden p-6"><div className="flex items-center justify-between"><div><p className="eyebrow">Doctor consultation</p><h3 className="display mt-2 text-[21px] font-extrabold text-[#24285f]">You&apos;re in good hands.</h3></div><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#fff5e5] text-[#b7781e]"><Stethoscope size={17} /></span></div><div className="mt-6 rounded-2xl bg-[#fff9ec] p-4"><div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#efd4c2] text-[11px] font-extrabold text-[#7a4e3b]">AM</span><div><p className="text-[12px] font-extrabold text-[#45371d]">Dr. Arjun Mehta</p><p className="mt-1 text-[10px] font-semibold text-[#9d8454]">General physician · Video consult</p></div></div><div className="mt-4 flex items-center gap-2 text-[11px] font-bold text-[#8d713e]"><CalendarDays size={14} /> Today, 4:30 PM <span className="mx-1 h-1 w-1 rounded-full bg-[#c6ad78]" /> <Clock3 size={14} /> 25 min</div></div><button className="btn btn-quiet mt-4 w-full !justify-between !bg-white" onClick={() => toast.success("Consultation details opened")}>View consultation details <ArrowRight size={14} /></button></div></div>
     </div></AppFrame>;
+}
+
+function PreventiveCareDashboard({ onNavigate }: { onNavigate: (to: NavKey) => void }) {
+  const [backPainDetected, setBackPainDetected] = useState(true);
+  const { t } = useLanguage();
+  const dailyTips = [
+    { icon: <Droplets size={18} />, title: "Hydrate before you feel thirsty", body: "Keep water nearby and aim for a glass with every meal." },
+    { icon: <SunMedium size={18} />, title: "Take a sunlight break", body: "A gentle 10-minute morning walk can support mood and mobility." },
+    { icon: <Moon size={18} />, title: "Protect your sleep window", body: "Dim screens 30 minutes before bed and keep a regular bedtime." },
+  ];
+  const asanas = [
+    ["Bhujangasana", "Cobra pose · gentle chest and spine opening", "2 rounds · 20 sec"],
+    ["Marjaryasana–Bitilasana", "Cat–cow · slow spinal mobility", "8 gentle cycles"],
+    ["Balasana", "Child’s pose · restorative lower-back release", "30–45 sec"],
+  ];
+  return <AppFrame active="Preventive care" onNavigate={onNavigate}>
+    <div className="stagger mx-auto max-w-[1100px]">
+      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="eyebrow">Preventive care</p><h1 className="display mt-2 text-[31px] font-extrabold text-[#24285f]">Small habits, stronger days.</h1><p className="mt-2 max-w-[570px] text-[13px] leading-6 text-[#7b8797]">A gentle, personalized view of the habits that can help you feel your best.</p></div><button className="btn btn-quiet self-start !bg-white" onClick={() => toast.success("Daily plan refreshed", { description: "Your preventive care suggestions are up to date." })}><Sparkles size={15} className="text-[#1f9f99]" /> Refresh plan</button></div>
+      <div className="mt-7 grid gap-5 xl:grid-cols-[1.15fr_.85fr]"><div className="relative overflow-hidden rounded-[25px] bg-[#24285f] p-6 text-white sm:p-8"><div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border-[30px] border-white/5" /><div className="absolute -bottom-24 right-20 h-52 w-52 rounded-full bg-[#1f9f99]/20 blur-3xl" /><div className="relative"><div className="flex items-center justify-between gap-3"><span className="chip bg-[#8eddd7]/15 text-[#8eddd7]"><Leaf size={13} /> Today’s care plan</span><span className="text-[10px] font-bold text-white/45">Tuesday · 14 Sep</span></div><h2 className="display mt-7 max-w-[530px] text-[32px] font-extrabold leading-[1.1] sm:text-[40px]">A little care today<br /><span className="text-[#8eddd7]">goes a long way.</span></h2><p className="mt-4 max-w-[480px] text-[13px] leading-6 text-white/60">Three low-effort actions, selected for your routine and recent health conversations.</p><div className="mt-7 flex flex-wrap gap-2"><span className="rounded-full bg-white/10 px-3 py-2 text-[10px] font-extrabold text-white/75">0 of 3 completed</span><span className="rounded-full bg-[#e8a844]/15 px-3 py-2 text-[10px] font-extrabold text-[#f4ca7b]">Keep it gentle</span></div></div></div><div className="soft-card p-6"><div className="flex items-start justify-between gap-4"><div><p className="eyebrow">AI symptom signal</p><h2 className="display mt-2 text-[23px] font-extrabold text-[#24285f]">Personalized for you</h2></div><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0edff] text-[#7c73d0]"><Brain size={18} /></span></div><div className="mt-5 rounded-2xl border border-[#d8e7e5] bg-[#f5fbfa] p-4"><div className="flex items-start gap-3"><span className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-xl bg-[#1f9f99] text-white"><Activity size={15} /></span><div><p className="text-[12px] font-extrabold text-[#256c69]">{backPainDetected ? "Back pain mentioned recently" : "No active symptom signal"}</p><p className="mt-1 text-[11px] leading-5 text-[#6d858a]">{backPainDetected ? "We added gentle movement and food ideas below. This is wellness guidance, not a diagnosis." : "Your preventive plan is currently based on everyday wellness habits."}</p></div></div></div><button className="mt-4 text-[10px] font-extrabold text-[#1f9f99]" onClick={() => setBackPainDetected(!backPainDetected)}>{backPainDetected ? "Hide back-pain suggestions" : "Preview back-pain suggestions"}</button></div></div>
+      <div className="mt-6"><div className="flex items-end justify-between"><div><p className="eyebrow">Daily health tips</p><h2 className="display mt-2 text-[23px] font-extrabold text-[#24285f]">Simple actions for today.</h2></div><span className="hidden text-[10px] font-extrabold text-[#1f9f99] sm:block">Curated by SwasthyaSetu</span></div><div className="mt-4 grid gap-4 md:grid-cols-3">{dailyTips.map((tip, index) => <div key={tip.title} className="soft-card p-5 transition-transform hover:-translate-y-1"><span className={`flex h-10 w-10 items-center justify-center rounded-xl ${index === 0 ? "bg-[#e8f6f3] text-[#1f9f99]" : index === 1 ? "bg-[#fff5e5] text-[#b7781e]" : "bg-[#f0edff] text-[#7c73d0]"}`}>{tip.icon}</span><h3 className="mt-5 text-[14px] font-extrabold text-[#2e3b57]">{tip.title}</h3><p className="mt-2 text-[11px] leading-5 text-[#8995a5]">{tip.body}</p><button className="mt-4 text-[10px] font-extrabold text-[#1f9f99]" onClick={() => toast.success("Tip marked done")}>Mark as done <ArrowRight className="ml-1 inline" size={11} /></button></div>)}</div></div>
+      {backPainDetected && <div className="mt-7 rounded-[25px] border border-[#cfe5e0] bg-white p-6 shadow-[0_14px_40px_rgba(31,159,153,.08)] sm:p-7"><div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start"><div><span className="chip bg-[#e8f6f3] text-[#1f8682]"><HeartPulse size={13} /> Based on your recent check-in</span><h2 className="display mt-4 text-[27px] font-extrabold text-[#24285f]">Gentle support for back pain.</h2><p className="mt-2 max-w-[650px] text-[12px] leading-6 text-[#7b8797]">Try slow, comfortable movement and nourishing food choices. Stop if anything causes pain, and speak with your doctor for persistent or severe symptoms.</p></div><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#fff5e5] text-[#b7781e]"><ShieldCheck size={19} /></span></div><div className="mt-6 grid gap-4 lg:grid-cols-[1.15fr_.85fr]"><div><p className="eyebrow">Basic yoga asanas</p><div className="mt-3 space-y-2">{asanas.map(([name, desc, dose]) => <div key={name} className="flex items-center gap-3 rounded-2xl border border-[#edf0f3] p-3"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#e8f6f3] text-[#1f9f99]"><Leaf size={16} /></span><div className="min-w-0 flex-1"><p className="text-[12px] font-extrabold text-[#2e3b57]">{name}</p><p className="mt-1 text-[10px] text-[#8b96a5]">{desc}</p></div><span className="hidden text-[10px] font-extrabold text-[#1f9f99] sm:block">{dose}</span></div>)}</div></div><div className="rounded-2xl bg-[#fff9ec] p-5"><p className="eyebrow !text-[#aa761d]">Natural diet ideas</p><ul className="mt-4 space-y-3 text-[11px] font-semibold leading-5 text-[#79623b]"><li className="flex gap-2"><Check size={14} className="mt-0.5 shrink-0 text-[#b7781e]" /> Warm turmeric milk or ginger tea if it suits you.</li><li className="flex gap-2"><Check size={14} className="mt-0.5 shrink-0 text-[#b7781e]" /> Add leafy greens, lentils, nuts, and seasonal fruit.</li><li className="flex gap-2"><Check size={14} className="mt-0.5 shrink-0 text-[#b7781e]" /> Choose regular meals and enough water over quick fixes.</li></ul><button className="btn btn-quiet mt-5 w-full !bg-white" onClick={() => toast("Wellness note saved")}>Save to my care plan</button></div></div></div>}
+    </div>
+  </AppFrame>;
 }
 
 function StatCard({ label, value, change, icon, accent = "teal" }: { label: string; value: string; change: string; icon: React.ReactNode; accent?: string }) {
@@ -248,6 +274,7 @@ export default function Home() {
   if (location === "/patient-login") return <LoginPortal role="patient" onNavigate={onNavigate} />;
   if (location === "/doctor-login") return <LoginPortal role="doctor" onNavigate={onNavigate} />;
   if (location === "/patient") return <PatientDashboard onNavigate={onNavigate} />;
+  if (location === "/preventive") return <PreventiveCareDashboard onNavigate={onNavigate} />;
   if (location === "/case") return <CaseFlow onNavigate={onNavigate} />;
   if (location === "/doctor") return <DoctorWorkspace onNavigate={onNavigate} />;
   if (location === "/access") return <MedicineAccess onNavigate={onNavigate} />;
