@@ -73,8 +73,8 @@ function LanguageSwitcher({ inverse = false }: { inverse?: boolean }) {
   return <label className={`flex items-center gap-2 rounded-xl border px-2.5 py-2 text-[10px] font-extrabold ${inverse ? "border-white/15 bg-white/10 text-white" : "border-[#e4e9ef] bg-white text-[#546177]"}`} title="Change language">
     <Languages size={14} className={inverse ? "text-[#8eddd7]" : "text-[#1f9f99]"} />
     <span className="hidden sm:inline">{languageLabel}</span>
-    <select aria-label="Change language" value={language} onChange={(event) => setLanguage(event.target.value as "en" | "hi" | "te")} className={`bg-transparent outline-none ${inverse ? "text-white" : "text-[#546177]"}`}>
-      <option value="en">EN</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option>
+    <select aria-label="Change language" value={language} onChange={(event) => setLanguage(event.target.value as "en" | "hi" | "te" | "bn" | "mr" | "ta" | "kn")} className={`max-w-[92px] bg-transparent outline-none ${inverse ? "text-white" : "text-[#546177]"}`}>
+      <option value="en">English</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option><option value="bn">বাংলা</option><option value="mr">मराठी</option><option value="ta">தமிழ்</option><option value="kn">ಕನ್ನಡ</option>
     </select>
   </label>;
 }

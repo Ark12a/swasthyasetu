@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-type Language = "en" | "hi" | "te";
+type Language = "en" | "hi" | "te" | "bn" | "mr" | "ta" | "kn";
 
 type LanguageContextValue = {
   language: Language;
@@ -9,113 +9,33 @@ type LanguageContextValue = {
   t: (key: string, fallback?: string) => string;
 };
 
+const shared: Record<string, string> = {
+  "nav.features": "Features", "nav.how": "How it works", "nav.doctors": "For doctors", "nav.about": "About us", "nav.doctorPortal": "Doctor portal", "nav.getStarted": "Get started",
+  "hero.badge": "Designed for every health conversation", "hero.titleA": "Your health story,", "hero.titleB": "heard clearly.", "hero.description": "SwasthyaSetu turns the way you feel into a structured, shareable case your doctor can act on — in your language, at your pace.", "hero.start": "Start your health story", "hero.how": "See how it works",
+  "feature.voice": "Voice-first", "feature.ocr": "OCR ready", "feature.ayush": "AYUSH aware", "login.patient": "Patient portal", "login.doctor": "Doctor portal", "login.patientTitle": "Welcome back to your care.", "login.doctorTitle": "Welcome back, doctor.", "login.signIn": "Sign in securely", "login.password": "Password login", "login.otp": "Use OTP", "login.switchPatient": "patient portal", "login.switchDoctor": "doctor portal",
+  "dashboard.patient": "Patient home", "dashboard.greeting": "Namaste, Asha", "dashboard.checkin": "How are you feeling today?", "dashboard.startCase": "Start a new case", "dashboard.doctorGreeting": "Good morning, Dr. Mehta.", "dashboard.doctor": "Doctor workspace", "dashboard.overview": "Overview", "dashboard.story": "My health story", "dashboard.documents": "Documents", "dashboard.consultation": "Doctor consultation", "dashboard.newCases": "New cases", "dashboard.patients": "Patients", "dashboard.appointments": "Appointments", "dashboard.reports": "Reports", "dashboard.signOut": "Sign out", "dashboard.language": "Language",
+};
+
 const translations: Record<Exclude<Language, "en">, Record<string, string>> = {
-  hi: {
-    "nav.features": "सुविधाएँ",
-    "nav.how": "यह कैसे काम करता है",
-    "nav.doctors": "डॉक्टरों के लिए",
-    "nav.about": "हमारे बारे में",
-    "nav.doctorPortal": "डॉक्टर पोर्टल",
-    "nav.getStarted": "शुरू करें",
-    "hero.badge": "हर स्वास्थ्य बातचीत के लिए बनाया गया",
-    "hero.titleA": "आपकी स्वास्थ्य कहानी,",
-    "hero.titleB": "अब साफ़ सुनी जाएगी।",
-    "hero.description": "SwasthyaSetu आपकी बात को एक स्पष्ट, साझा करने योग्य केस में बदलता है — आपकी भाषा में, आपकी गति से।",
-    "hero.start": "अपनी स्वास्थ्य कहानी शुरू करें",
-    "hero.how": "यह कैसे काम करता है",
-    "feature.voice": "आवाज़ के साथ",
-    "feature.ocr": "OCR तैयार",
-    "feature.ayush": "AYUSH अनुकूल",
-    "login.patient": "पेशेंट पोर्टल",
-    "login.doctor": "डॉक्टर पोर्टल",
-    "login.patientTitle": "अपनी देखभाल में वापस आएँ।",
-    "login.doctorTitle": "डॉक्टर, आपका स्वागत है।",
-    "login.signIn": "सुरक्षित रूप से साइन इन करें",
-    "login.password": "पासवर्ड से लॉगिन",
-    "login.otp": "OTP से लॉगिन",
-    "login.switchPatient": "पेशेंट पोर्टल पर जाएँ",
-    "login.switchDoctor": "डॉक्टर पोर्टल पर जाएँ",
-    "dashboard.patient": "पेशेंट होम",
-    "dashboard.greeting": "नमस्ते, आशा",
-    "dashboard.checkin": "आज आप कैसा महसूस कर रही हैं?",
-    "dashboard.startCase": "नया केस शुरू करें",
-    "dashboard.doctorGreeting": "सुप्रभात, डॉ. मेहता।",
-    "dashboard.doctor": "डॉक्टर वर्कस्पेस",
-    "dashboard.overview": "अवलोकन",
-    "dashboard.story": "मेरी स्वास्थ्य कहानी",
-    "dashboard.documents": "दस्तावेज़",
-    "dashboard.consultation": "डॉक्टर परामर्श",
-    "dashboard.newCases": "नए केस",
-    "dashboard.patients": "मरीज़",
-    "dashboard.appointments": "अपॉइंटमेंट",
-    "dashboard.reports": "रिपोर्ट",
-    "dashboard.signOut": "साइन आउट",
-    "dashboard.language": "भाषा",
-  },
-  te: {
-    "nav.features": "ఫీచర్లు",
-    "nav.how": "ఎలా పనిచేస్తుంది",
-    "nav.doctors": "వైద్యుల కోసం",
-    "nav.about": "మా గురించి",
-    "nav.doctorPortal": "డాక్టర్ పోర్టల్",
-    "nav.getStarted": "ప్రారంభించండి",
-    "hero.badge": "ప్రతి ఆరోగ్య సంభాషణ కోసం రూపొందించబడింది",
-    "hero.titleA": "మీ ఆరోగ్య కథ,",
-    "hero.titleB": "స్పష్టంగా వినబడుతుంది.",
-    "hero.description": "SwasthyaSetu మీరు చెప్పేదాన్ని మీ భాషలో, మీ వేగంతో, డాక్టర్ ఉపయోగించగల స్పష్టమైన కేసుగా మారుస్తుంది.",
-    "hero.start": "మీ ఆరోగ్య కథను ప్రారంభించండి",
-    "hero.how": "ఎలా పనిచేస్తుంది",
-    "feature.voice": "వాయిస్‌తో",
-    "feature.ocr": "OCR సిద్ధంగా ఉంది",
-    "feature.ayush": "AYUSH అనుకూలం",
-    "login.patient": "పేషెంట్ పోర్టల్",
-    "login.doctor": "డాక్టర్ పోర్టల్",
-    "login.patientTitle": "మీ సంరక్షణకు తిరిగి రండి.",
-    "login.doctorTitle": "డాక్టర్, స్వాగతం.",
-    "login.signIn": "సురక్షితంగా సైన్ ఇన్ చేయండి",
-    "login.password": "పాస్‌వర్డ్ లాగిన్",
-    "login.otp": "OTP లాగిన్",
-    "login.switchPatient": "పేషెంట్ పోర్టల్‌కు వెళ్లండి",
-    "login.switchDoctor": "డాక్టర్ పోర్టల్‌కు వెళ్లండి",
-    "dashboard.patient": "పేషెంట్ హోమ్",
-    "dashboard.greeting": "నమస్తే, ఆశా",
-    "dashboard.checkin": "ఈ రోజు మీకు ఎలా అనిపిస్తోంది?",
-    "dashboard.startCase": "కొత్త కేసును ప్రారంభించండి",
-    "dashboard.doctorGreeting": "శుభోదయం, డా. మెహతా.",
-    "dashboard.doctor": "డాక్టర్ వర్క్‌స్పేస్",
-    "dashboard.overview": "అవలోకనం",
-    "dashboard.story": "నా ఆరోగ్య కథ",
-    "dashboard.documents": "పత్రాలు",
-    "dashboard.consultation": "డాక్టర్ సంప్రదింపు",
-    "dashboard.newCases": "కొత్త కేసులు",
-    "dashboard.patients": "పేషెంట్లు",
-    "dashboard.appointments": "అపాయింట్‌మెంట్లు",
-    "dashboard.reports": "రిపోర్టులు",
-    "dashboard.signOut": "సైన్ అవుట్",
-    "dashboard.language": "భాష",
-  },
+  hi: { ...shared, "nav.features": "सुविधाएँ", "nav.how": "यह कैसे काम करता है", "nav.doctors": "डॉक्टरों के लिए", "nav.about": "हमारे बारे में", "nav.doctorPortal": "डॉक्टर पोर्टल", "nav.getStarted": "शुरू करें", "hero.badge": "हर स्वास्थ्य बातचीत के लिए बनाया गया", "hero.titleA": "आपकी स्वास्थ्य कहानी,", "hero.titleB": "अब साफ़ सुनी जाएगी।", "hero.description": "SwasthyaSetu आपकी बात को एक स्पष्ट, साझा करने योग्य केस में बदलता है — आपकी भाषा में, आपकी गति से।", "hero.start": "अपनी स्वास्थ्य कहानी शुरू करें", "hero.how": "यह कैसे काम करता है", "feature.voice": "आवाज़ के साथ", "feature.ocr": "OCR तैयार", "feature.ayush": "AYUSH अनुकूल", "login.patient": "पेशेंट पोर्टल", "login.doctor": "डॉक्टर पोर्टल", "login.patientTitle": "अपनी देखभाल में वापस आएँ।", "login.doctorTitle": "डॉक्टर, आपका स्वागत है।", "login.signIn": "सुरक्षित रूप से साइन इन करें", "login.password": "पासवर्ड से लॉगिन", "login.otp": "OTP से लॉगिन", "login.switchPatient": "पेशेंट पोर्टल पर जाएँ", "login.switchDoctor": "डॉक्टर पोर्टल पर जाएँ", "dashboard.patient": "पेशेंट होम", "dashboard.greeting": "नमस्ते, आशा", "dashboard.checkin": "आज आप कैसा महसूस कर रही हैं?", "dashboard.startCase": "नया केस शुरू करें", "dashboard.doctorGreeting": "सुप्रभात, डॉ. मेहता।", "dashboard.doctor": "डॉक्टर वर्कस्पेस", "dashboard.overview": "अवलोकन", "dashboard.story": "मेरी स्वास्थ्य कहानी", "dashboard.documents": "दस्तावेज़", "dashboard.consultation": "डॉक्टर परामर्श", "dashboard.newCases": "नए केस", "dashboard.patients": "मरीज़", "dashboard.appointments": "अपॉइंटमेंट", "dashboard.reports": "रिपोर्ट", "dashboard.signOut": "साइन आउट", "dashboard.language": "भाषा" },
+  te: { ...shared, "nav.features": "ఫీచర్లు", "nav.how": "ఎలా పనిచేస్తుంది", "nav.doctors": "వైద్యుల కోసం", "nav.about": "మా గురించి", "nav.doctorPortal": "డాక్టర్ పోర్టల్", "nav.getStarted": "ప్రారంభించండి", "hero.badge": "ప్రతి ఆరోగ్య సంభాషణ కోసం రూపొందించబడింది", "hero.titleA": "మీ ఆరోగ్య కథ,", "hero.titleB": "స్పష్టంగా వినబడుతుంది.", "hero.description": "SwasthyaSetu మీరు చెప్పేదాన్ని మీ భాషలో, మీ వేగంతో, డాక్టర్ ఉపయోగించగల స్పష్టమైన కేసుగా మారుస్తుంది.", "hero.start": "మీ ఆరోగ్య కథను ప్రారంభించండి", "hero.how": "ఎలా పనిచేస్తుంది", "feature.voice": "వాయిస్‌తో", "feature.ocr": "OCR సిద్ధంగా ఉంది", "feature.ayush": "AYUSH అనుకూలం", "login.patient": "పేషెంట్ పోర్టల్", "login.doctor": "డాక్టర్ పోర్టల్", "login.patientTitle": "మీ సంరక్షణకు తిరిగి రండి.", "login.doctorTitle": "డాక్టర్, స్వాగతం.", "login.signIn": "సురక్షితంగా సైన్ ఇన్ చేయండి", "login.password": "పాస్‌వర్డ్ లాగిన్", "login.otp": "OTP లాగిన్", "login.switchPatient": "పేషెంట్ పోర్టల్‌కు వెళ్లండి", "login.switchDoctor": "డాక్టర్ పోర్టల్‌కు వెళ్లండి", "dashboard.patient": "పేషెంట్ హోమ్", "dashboard.greeting": "నమస్తే, ఆశా", "dashboard.checkin": "ఈ రోజు మీకు ఎలా అనిపిస్తోంది?", "dashboard.startCase": "కొత్త కేసును ప్రారంభించండి", "dashboard.doctorGreeting": "శుభోదయం, డా. మెహతా.", "dashboard.doctor": "డాక్టర్ వర్క్‌స్పేస్", "dashboard.overview": "అవలోకనం", "dashboard.story": "నా ఆరోగ్య కథ", "dashboard.documents": "పత్రాలు", "dashboard.consultation": "డాక్టర్ సంప్రదింపు", "dashboard.newCases": "కొత్త కేసులు", "dashboard.patients": "పేషెంట్లు", "dashboard.appointments": "అపాయింట్‌మెంట్లు", "dashboard.reports": "రిపోర్టులు", "dashboard.signOut": "సైన్ అవుట్", "dashboard.language": "భాష" },
+  bn: { ...shared, "nav.features": "সুবিধাগুলি", "nav.how": "যেভাবে কাজ করে", "nav.doctors": "চিকিৎসকদের জন্য", "nav.about": "আমাদের সম্পর্কে", "nav.doctorPortal": "ডাক্তার পোর্টাল", "nav.getStarted": "শুরু করুন", "hero.badge": "প্রতিটি স্বাস্থ্য কথোপকথনের জন্য তৈরি", "hero.titleA": "আপনার স্বাস্থ্যকথা,", "hero.titleB": "স্পষ্টভাবে শোনা হবে।", "hero.description": "SwasthyaSetu আপনার অনুভূতিকে একটি পরিষ্কার, শেয়ারযোগ্য কেসে পরিণত করে — আপনার ভাষায়, আপনার গতিতে।", "hero.start": "আপনার স্বাস্থ্যকথা শুরু করুন", "hero.how": "যেভাবে কাজ করে", "feature.voice": "ভয়েস-ফার্স্ট", "feature.ocr": "OCR প্রস্তুত", "feature.ayush": "AYUSH সহায়ক", "login.patient": "রোগী পোর্টাল", "login.doctor": "ডাক্তার পোর্টাল", "login.patientTitle": "আপনার যত্নে ফিরে আসুন।", "login.doctorTitle": "স্বাগতম, ডাক্তার।", "login.signIn": "নিরাপদে সাইন ইন করুন", "login.password": "পাসওয়ার্ড লগইন", "login.otp": "OTP ব্যবহার করুন", "login.switchPatient": "রোগী পোর্টালে যান", "login.switchDoctor": "ডাক্তার পোর্টালে যান", "dashboard.patient": "রোগীর হোম", "dashboard.greeting": "নমস্কার, আশা", "dashboard.checkin": "আজ আপনি কেমন অনুভব করছেন?", "dashboard.startCase": "নতুন কেস শুরু করুন", "dashboard.doctorGreeting": "সুপ্রভাত, ডা. মেহতা।", "dashboard.doctor": "ডাক্তার ওয়ার্কস্পেস", "dashboard.overview": "ওভারভিউ", "dashboard.story": "আমার স্বাস্থ্যকথা", "dashboard.documents": "নথি", "dashboard.consultation": "ডাক্তারের পরামর্শ", "dashboard.newCases": "নতুন কেস", "dashboard.patients": "রোগীরা", "dashboard.appointments": "অ্যাপয়েন্টমেন্ট", "dashboard.reports": "রিপোর্ট", "dashboard.signOut": "সাইন আউট", "dashboard.language": "ভাষা" },
+  mr: { ...shared, "nav.features": "वैशिष्ट्ये", "nav.how": "हे कसे कार्य करते", "nav.doctors": "डॉक्टरांसाठी", "nav.about": "आमच्याबद्दल", "nav.doctorPortal": "डॉक्टर पोर्टल", "nav.getStarted": "सुरू करा", "hero.badge": "प्रत्येक आरोग्य संवादासाठी तयार", "hero.titleA": "तुमची आरोग्यकथा,", "hero.titleB": "स्पष्टपणे ऐकली जाईल.", "hero.description": "SwasthyaSetu तुम्हाला कसे वाटते हे स्पष्ट, शेअर करता येणाऱ्या केसामध्ये बदलते — तुमच्या भाषेत, तुमच्या गतीने।", "hero.start": "तुमची आरोग्यकथा सुरू करा", "hero.how": "हे कसे कार्य करते", "feature.voice": "व्हॉइस-फर्स्ट", "feature.ocr": "OCR तयार", "feature.ayush": "AYUSH अनुकूल", "login.patient": "रुग्ण पोर्टल", "login.doctor": "डॉक्टर पोर्टल", "login.patientTitle": "तुमच्या काळजीत परत या.", "login.doctorTitle": "स्वागत आहे, डॉक्टर.", "login.signIn": "सुरक्षितपणे साइन इन करा", "login.password": "पासवर्ड लॉगिन", "login.otp": "OTP वापरा", "login.switchPatient": "रुग्ण पोर्टलवर जा", "login.switchDoctor": "डॉक्टर पोर्टलवर जा", "dashboard.patient": "रुग्ण होम", "dashboard.greeting": "नमस्कार, आशा", "dashboard.checkin": "आज तुम्हाला कसे वाटत आहे?", "dashboard.startCase": "नवीन केस सुरू करा", "dashboard.doctorGreeting": "सुप्रभात, डॉ. मेहता.", "dashboard.doctor": "डॉक्टर वर्कस्पेस", "dashboard.overview": "आढावा", "dashboard.story": "माझी आरोग्यकथा", "dashboard.documents": "कागदपत्रे", "dashboard.consultation": "डॉक्टरांचा सल्ला", "dashboard.newCases": "नवीन केस", "dashboard.patients": "रुग्ण", "dashboard.appointments": "भेटी", "dashboard.reports": "अहवाल", "dashboard.signOut": "साइन आउट", "dashboard.language": "भाषा" },
+  ta: { ...shared, "nav.features": "அம்சங்கள்", "nav.how": "எப்படி செயல்படுகிறது", "nav.doctors": "மருத்துவர்களுக்காக", "nav.about": "எங்களைப் பற்றி", "nav.doctorPortal": "மருத்துவர் போர்டல்", "nav.getStarted": "தொடங்குங்கள்", "hero.badge": "ஒவ்வொரு சுகாதார உரையாடலுக்காக உருவாக்கப்பட்டது", "hero.titleA": "உங்கள் சுகாதாரக் கதை,", "hero.titleB": "தெளிவாகக் கேட்கப்படும்.", "hero.description": "SwasthyaSetu நீங்கள் உணர்வதை உங்கள் மொழியில், உங்கள் வேகத்தில், மருத்துவர் செயல்படக்கூடிய தெளிவான வழக்காக மாற்றுகிறது.", "hero.start": "உங்கள் சுகாதாரக் கதையைத் தொடங்குங்கள்", "hero.how": "எப்படி செயல்படுகிறது", "feature.voice": "குரல் முதலில்", "feature.ocr": "OCR தயார்", "feature.ayush": "AYUSH ஆதரவு", "login.patient": "நோயாளர் போர்டல்", "login.doctor": "மருத்துவர் போர்டல்", "login.patientTitle": "உங்கள் பராமரிப்புக்கு திரும்புங்கள்.", "login.doctorTitle": "வரவேற்கிறோம், மருத்துவரே.", "login.signIn": "பாதுகாப்பாக உள்நுழைக", "login.password": "கடவுச்சொல் உள்நுழைவு", "login.otp": "OTP பயன்படுத்தவும்", "login.switchPatient": "நோயாளர் போர்டலுக்குச் செல்லுங்கள்", "login.switchDoctor": "மருத்துவர் போர்டலுக்குச் செல்லுங்கள்", "dashboard.patient": "நோயாளர் முகப்பு", "dashboard.greeting": "வணக்கம், ஆஷா", "dashboard.checkin": "இன்று நீங்கள் எப்படி உணர்கிறீர்கள்?", "dashboard.startCase": "புதிய வழக்கைத் தொடங்கு", "dashboard.doctorGreeting": "காலை வணக்கம், டாக்டர் மேத்தா.", "dashboard.doctor": "மருத்துவர் பணியிடம்", "dashboard.overview": "கண்ணோட்டம்", "dashboard.story": "எனது சுகாதாரக் கதை", "dashboard.documents": "ஆவணங்கள்", "dashboard.consultation": "மருத்துவர் ஆலோசனை", "dashboard.newCases": "புதிய வழக்குகள்", "dashboard.patients": "நோயாளிகள்", "dashboard.appointments": "சந்திப்புகள்", "dashboard.reports": "அறிக்கைகள்", "dashboard.signOut": "வெளியேறு", "dashboard.language": "மொழி" },
+  kn: { ...shared, "nav.features": "ವೈಶಿಷ್ಟ್ಯಗಳು", "nav.how": "ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ", "nav.doctors": "ವೈದ್ಯರಿಗಾಗಿ", "nav.about": "ನಮ್ಮ ಬಗ್ಗೆ", "nav.doctorPortal": "ವೈದ್ಯರ ಪೋರ್ಟಲ್", "nav.getStarted": "ಪ್ರಾರಂಭಿಸಿ", "hero.badge": "ಪ್ರತಿ ಆರೋಗ್ಯ ಸಂಭಾಷಣೆಗಾಗಿ ವಿನ್ಯಾಸಗೊಳಿಸಲಾಗಿದೆ", "hero.titleA": "ನಿಮ್ಮ ಆರೋಗ್ಯ ಕಥೆ,", "hero.titleB": "ಸ್ಪಷ್ಟವಾಗಿ ಕೇಳಿಸಿಕೊಳ್ಳುತ್ತದೆ.", "hero.description": "SwasthyaSetu ನಿಮ್ಮ ಅನುಭವವನ್ನು ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ, ನಿಮ್ಮ ವೇಗದಲ್ಲಿ ವೈದ್ಯರು ಬಳಸಬಹುದಾದ ಸ್ಪಷ್ಟ ಕೇಸ್ ಆಗಿ ರೂಪಿಸುತ್ತದೆ.", "hero.start": "ನಿಮ್ಮ ಆರೋಗ್ಯ ಕಥೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ", "hero.how": "ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ", "feature.voice": "ಧ್ವನಿ ಮೊದಲು", "feature.ocr": "OCR ಸಿದ್ಧ", "feature.ayush": "AYUSH ಸ್ನೇಹಿ", "login.patient": "ರೋಗಿಯ ಪೋರ್ಟಲ್", "login.doctor": "ವೈದ್ಯರ ಪೋರ್ಟಲ್", "login.patientTitle": "ನಿಮ್ಮ ಆರೈಕೆಗೆ ಮರಳಿ ಬನ್ನಿ.", "login.doctorTitle": "ಸ್ವಾಗತ, ವೈದ್ಯರೇ.", "login.signIn": "ಸುರಕ್ಷಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ", "login.password": "ಪಾಸ್‌ವರ್ಡ್ ಲಾಗಿನ್", "login.otp": "OTP ಬಳಸಿ", "login.switchPatient": "ರೋಗಿಯ ಪೋರ್ಟಲ್‌ಗೆ ಹೋಗಿ", "login.switchDoctor": "ವೈದ್ಯರ ಪೋರ್ಟಲ್‌ಗೆ ಹೋಗಿ", "dashboard.patient": "ರೋಗಿಯ ಮುಖಪುಟ", "dashboard.greeting": "ನಮಸ್ಕಾರ, ಆಶಾ", "dashboard.checkin": "ಇಂದು ನಿಮಗೆ ಹೇಗಿದೆ?", "dashboard.startCase": "ಹೊಸ ಕೇಸ್ ಪ್ರಾರಂಭಿಸಿ", "dashboard.doctorGreeting": "ಶುಭೋದಯ, ಡಾ. ಮೆಹತಾ.", "dashboard.doctor": "ವೈದ್ಯರ ಕಾರ್ಯಕ್ಷೇತ್ರ", "dashboard.overview": "ಅವಲೋಕನ", "dashboard.story": "ನನ್ನ ಆರೋಗ್ಯ ಕಥೆ", "dashboard.documents": "ದಾಖಲೆಗಳು", "dashboard.consultation": "ವೈದ್ಯರ ಸಮಾಲೋಚನೆ", "dashboard.newCases": "ಹೊಸ ಕೇಸ್‌ಗಳು", "dashboard.patients": "ರೋಗಿಗಳು", "dashboard.appointments": "ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್‌ಗಳು", "dashboard.reports": "ವರದಿಗಳು", "dashboard.signOut": "ಸೈನ್ ಔಟ್", "dashboard.language": "ಭಾಷೆ" },
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => (localStorage.getItem("swasthya-language") as Language) || "en");
-  const setLanguage = (next: Language) => {
-    setLanguageState(next);
-    localStorage.setItem("swasthya-language", next);
-  };
-  const value = useMemo(() => ({
-    language,
-    setLanguage,
-    languageLabel: language === "hi" ? "हिन्दी" : language === "te" ? "తెలుగు" : "English",
-    t: (key: string, fallback = key) => language === "en" ? fallback : translations[language][key] || fallback,
-  }), [language]);
-  useEffect(() => { document.documentElement.lang = language === "hi" ? "hi" : language === "te" ? "te" : "en"; }, [language]);
+  const [language, setLanguageState] = useState<Language>(() => {
+    const saved = localStorage.getItem("swasthya-language") as Language | null;
+    return saved && ["en", "hi", "te", "bn", "mr", "ta", "kn"].includes(saved) ? saved : "en";
+  });
+  const setLanguage = (next: Language) => { setLanguageState(next); localStorage.setItem("swasthya-language", next); };
+  const value = useMemo(() => ({ language, setLanguage, languageLabel: { en: "English", hi: "हिन्दी", te: "తెలుగు", bn: "বাংলা", mr: "मराठी", ta: "தமிழ்", kn: "ಕನ್ನಡ" }[language], t: (key: string, fallback = key) => language === "en" ? fallback : translations[language][key] || fallback }), [language]);
+  useEffect(() => { document.documentElement.lang = language === "hi" ? "hi" : language === "te" ? "te" : language === "bn" ? "bn" : language === "mr" ? "mr" : language === "ta" ? "ta" : language === "kn" ? "kn" : "en"; }, [language]);
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }
 
-export function useLanguage() {
-  const context = useContext(LanguageContext);
-  if (!context) throw new Error("useLanguage must be used inside LanguageProvider");
-  return context;
-}
+export function useLanguage() { const context = useContext(LanguageContext); if (!context) throw new Error("useLanguage must be used inside LanguageProvider"); return context; }
